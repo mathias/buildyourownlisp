@@ -64,9 +64,21 @@ int main(int argc, char** argv) {
     /* Attempt ot Parse the user input */
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Lispy, &r)) {
-        /* on success print the AST */
-        mpc_ast_print(r.output);
-        mpc_ast_delete(r.output);
+      /* on success print the AST */
+      /*mpc_ast_print(r.output);*/
+
+      mpc_ast_t* a = r.output;
+      printf("Tag: %s\n", a->tag);
+      printf("Contents: %s\n", a->contents);
+      printf("Number of children: %i\n", a->children_num);
+
+      /* Get first Child */
+      mpc_ast_t* c0 = a->children[0];
+      printf("First Child Tag: %s\n", c0->tag);
+      printf("First Child Contents: %s\n", c0->contents);
+      printf("First Child Number of children: %i\n", c0->children_num);
+
+      mpc_ast_delete(r.output);
     } else {
       /* Otherwise print the error */
       mpc_err_print(r.error);
