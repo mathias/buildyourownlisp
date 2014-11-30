@@ -569,6 +569,15 @@ lval* builtin_div(lenv* e, lval* a) {
   return builtin_op(e, a, "/");
 }
 
+lval* builtin_not(lenv* e, lval* a) {
+  LASSERT_NUM("!", a, 1);
+  LASSERT_TYPE("!", a, 0, LVAL_NUM);
+
+  int r = !(a->cell[0]->num);
+  lval_del(a);
+  return lval_num(r);
+}
+
 lval* builtin_ord(lenv* e, lval* a, char* op) {
   LASSERT_NUM(op, a, 2);
   LASSERT_TYPE(op, a, 0, LVAL_NUM);
@@ -882,6 +891,7 @@ void lenv_add_builtins(lenv* e) {
   lenv_add_builtin(e, "<=", builtin_le);
   lenv_add_builtin(e, "&&", builtin_and);
   lenv_add_builtin(e, "||", builtin_or);
+  lenv_add_builtin(e, "!", builtin_not);
 
   /* Equality*/
   lenv_add_builtin(e, "==", builtin_eq);
