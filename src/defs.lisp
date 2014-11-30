@@ -14,3 +14,7 @@
 (fun {reverse l} { if (== l {}) {{}} {join (reverse (tail l)) (head l)} })
 
 (fun {nth lst n} { if (== n 0) {eval (head lst)} {nth (tail lst) (- n 1)}})
+
+;; Since I only have integer arithmetic, this isn't too exciting:
+(defun {inverse x} {/ 1 x})
+
