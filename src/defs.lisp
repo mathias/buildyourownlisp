@@ -20,3 +20,5 @@
 
 ;; Bonus marks: Define a recursive Lisp function that returns 1 if an element is a member of a list, otherwise 0.
 (defun {member lst x} {if (== lst {}) {0} {if (== x (eval (head lst))) {1} {member (tail lst) x}}})
+
+(defun {last lst} {eval (head (reverse lst))})
