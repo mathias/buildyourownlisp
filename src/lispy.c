@@ -592,6 +592,14 @@ lval* builtin_ord(lenv* e, lval* a, char* op) {
     r = (a->cell[0]->num <= a->cell[1]->num);
   }
 
+  if (strcmp(op, "&&") == 0) {
+    r = (a->cell[0]->num && a->cell[1]->num);
+  }
+
+  if (strcmp(op, "||") == 0) {
+    r = (a->cell[0]->num || a->cell[1]->num);
+  }
+
   lval_del(a);
 
   return lval_num(r);
@@ -611,6 +619,14 @@ lval* builtin_ge(lenv* e, lval* a) {
 
 lval* builtin_le(lenv* e, lval* a) {
   return builtin_ord(e, a, "<=");
+}
+
+lval* builtin_and(lenv* e, lval* a) {
+  return builtin_ord(e, a, "&&");
+}
+
+lval* builtin_or(lenv* e, lval* a) {
+  return builtin_ord(e, a, "||");
 }
 
 lval* builtin_head(lenv* e, lval* a) {
@@ -796,6 +812,7 @@ lval* builtin_cmp(lenv* e, lval* a, char* op) {
   if (strcmp(op, "!=") == 0) {
     r = !lval_eq(a->cell[0], a->cell[1]);
   }
+
   lval_del(a);
   return lval_num(r);
 }
@@ -807,6 +824,7 @@ lval* builtin_eq(lenv* e, lval* a) {
 lval* builtin_ne(lenv* e, lval* a) {
   return builtin_cmp(e, a, "!=");
 }
+
 
 lval* builtin_if(lenv* e, lval* a) {
   LASSERT_NUM("if", a, 3);
@@ -862,6 +880,8 @@ void lenv_add_builtins(lenv* e) {
   lenv_add_builtin(e, "<", builtin_lt);
   lenv_add_builtin(e, ">=", builtin_ge);
   lenv_add_builtin(e, "<=", builtin_le);
+  lenv_add_builtin(e, "&&", builtin_and);
+  lenv_add_builtin(e, "||", builtin_or);
 
   /* Equality*/
   lenv_add_builtin(e, "==", builtin_eq);
@@ -1023,7 +1043,7 @@ int main(int argc, char** argv) {
   mpca_lang(MPCA_LANG_DEFAULT,
       "                                                                       \
         number      : /-?[0-9]+/ ;                                            \
-        symbol      : /[a-zA-Z0-9_+\\-*\\/\\\\=<>!&]+/ ;                      \
+        symbol      : /[a-zA-Z0-9_+\\-*\\/\\\\=\\|<>!&]+/ ;                   \
         sexpr       : '(' <expr>* ')' ;                                       \
         qexpr       : '{' <expr>* '}' ;                                       \
         expr        : <number> | <symbol> | <sexpr> | <qexpr> ;               \
