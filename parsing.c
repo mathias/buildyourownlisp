@@ -106,6 +106,20 @@ lval* lenv_get(lenv* e, lval* k) {
   return lval_err("Unbound Symbol: %s", k->sym);
 }
 
+char* lenv_get_fname_from_builtin(lenv* e, lval *v) {
+  /* Iterate over all the items in environment */
+  for (int i = 0; i < e->count; i++) {
+    /* Check if the function matches the lval's function */
+    /* If it does, return a copy of the value */
+    if (e->vals[i]->fun == v->fun) {
+      return e->syms[i];
+    }
+  }
+
+  /* If no function found in env return error */
+  return "Could not find function in env";
+}
+
 void lenv_put(lenv* e, lval* k, lval* v) {
   /* Iterate over all the items in environment */
   /* This is to see if variable already exists */
@@ -271,14 +285,14 @@ lval* lval_read(mpc_ast_t* t) {
 }
 
 /* Forward declare this function before we define it */
-void lval_print(lval* v);
+void lval_print(lenv* e, lval* v);
 
-void lval_expr_print(lval* v, char open, char close) {
+void lval_expr_print(lenv* e, lval* v, char open, char close) {
   putchar(open);
 
   for (int i = 0; i < v->count; i++) {
     /* Print value contained within */
-    lval_print(v->cell[i]);
+    lval_print(e, v->cell[i]);
 
     /* Don't print trailing space if last element */
     if (i != (v->count-1)) {
@@ -289,24 +303,27 @@ void lval_expr_print(lval* v, char open, char close) {
   putchar(close);
 }
 
-void lval_print(lval* v) {
+void lval_print(lenv* e, lval* v) {
   switch (v->type) {
     /* In the case the type is a number print it */
     /* Then 'break' out of the switch. */
     case LVAL_NUM: printf("%li", v->num); break;
-    case LVAL_FUN: printf("<function>"); break;
+    case LVAL_FUN:;
+      char* fname = lenv_get_fname_from_builtin(e, v);
+      printf("Function: %s", fname);
+      break;
 
     /* In the case the type is an error */
     case LVAL_ERR: printf("Error: %s", v->err); break;
 
     case LVAL_SYM: printf("%s", v->sym); break;
-    case LVAL_SEXPR: lval_expr_print(v, '(', ')'); break;
-    case LVAL_QEXPR: lval_expr_print(v, '{', '}'); break;
+    case LVAL_SEXPR: lval_expr_print(e, v, '(', ')'); break;
+    case LVAL_QEXPR: lval_expr_print(e, v, '{', '}'); break;
   }
 }
 
 /* Print an "lval" followed by a newline */
-void lval_println(lval* v) { lval_print(v); putchar('\n'); }
+void lval_println(lenv* e, lval* v) { lval_print(e, v); putchar('\n'); }
 
 lval* lval_take(lval* v, int i);
 lval* lval_pop(lval* v, int i);
@@ -670,7 +687,7 @@ int main(int argc, char** argv) {
     mpc_result_t r;
     if (mpc_parse("<stdin>", input, Lispy, &r)) {
       lval* x = lval_eval(e, lval_read(r.output));
-      lval_println(x);
+      lval_println(e, x);
       lval_del(x);
 
       mpc_ast_delete(r.output);
