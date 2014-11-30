@@ -18,3 +18,5 @@
 ;; Since I only have integer arithmetic, this isn't too exciting:
 (defun {inverse x} {/ 1 x})
 
+;; Bonus marks: Define a recursive Lisp function that returns 1 if an element is a member of a list, otherwise 0.
+(defun {member lst x} {if (== lst {}) {0} {if (== x (eval (head lst))) {1} {member (tail lst) x}}})
