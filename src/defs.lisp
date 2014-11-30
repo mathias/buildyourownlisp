@@ -1,4 +1,5 @@
 (def {fun} (\ {args body} {def (head args) (\ (tail args) body)}))
+(def {defun} fun)
 
 (fun {unpack f xs} {eval (join (list f) xs)})
 (fun {pack f & xs} {f xs})
