@@ -1107,14 +1107,14 @@ lval* lval_call(lenv* e, lval* f, lval* a) {
 }
 
 int main(int argc, char** argv) {
-  Number = mpc_new("number");
-  Symbol = mpc_new("symbol");
-  Sexpr  = mpc_new("sexpr");
-  Qexpr  = mpc_new("qexpr");
+  Comment = mpc_new("comment");
   Expr = mpc_new("expr");
   Lispy = mpc_new("lispy");
+  Number = mpc_new("number");
+  Qexpr  = mpc_new("qexpr");
+  Sexpr  = mpc_new("sexpr");
   String  = mpc_new("string");
-  Comment = mpc_new("comment");
+  Symbol = mpc_new("symbol");
 
   mpca_lang(MPCA_LANG_DEFAULT,
     "                                              \
