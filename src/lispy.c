@@ -774,7 +774,7 @@ lval* builtin_eval(lenv* e, lval* a) {
   return lval_eval(e, x);
 }
 
-lval* builtin_join(lenv* e, lval* a) {
+lval* builtin_join_qexpr(lenv* e, lval* a) {
   for(int i = 0; i < a->count; i++) {
     LASSERT_TYPE("join", a, i, LVAL_QEXPR);
   }
@@ -786,6 +786,39 @@ lval* builtin_join(lenv* e, lval* a) {
   }
 
   lval_del(a);
+  return x;
+}
+
+lval* builtin_join_str(lenv* e, lval* a) {
+  for(int i = 0; i < a->count; i++) {
+    LASSERT_TYPE("join", a, i, LVAL_STR);
+  }
+
+  lval* x = lval_pop(a, 0);
+
+  while (a->count) {
+    lval* y = lval_pop(a, 0);
+    char* concatted = malloc(strlen(x->str) + strlen(y->str) + 1);
+    concatted = strcat(x->str, y->str);
+    x = lval_str(concatted);
+
+    free(concatted);
+    free(y);
+  }
+
+  lval_del(a);
+  return x;
+}
+
+lval* builtin_join(lenv* e, lval* a) {
+  lval* x = malloc(sizeof(lval));
+
+  /* Switches based on the first cell's type */
+  switch(a->cell[0]->type) {
+    case LVAL_QEXPR: x = builtin_join_qexpr(e, a); break;
+    case LVAL_STR: x = builtin_join_str(e, a); break;
+  }
+
   return x;
 }
 
