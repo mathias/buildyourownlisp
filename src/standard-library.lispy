@@ -56,12 +56,6 @@
 (defun {second l} { eval (head (tail l)) })
 (defun {third l} { eval (head (tail (tail l))) })
 
-; List length (recursive)
-(defun {length l} {
-  if (== l nil)
-     {0}
-     {+ 1 (length (tail l))}
-})
 
 ; nth item
 (defun {nth n l} {
@@ -115,6 +109,13 @@
 
 (defun {sum l} {foldl + 0 l})
 (defun {product l} {foldl * 1 l})
+
+(defun {inc x} {+ 1 x})
+
+; List length (recursive)
+(defun {length l} {
+  foldl (\ {z l} {inc z}) 0 l
+})
 
 ; conditional functions
 (defun {select & cs} {
