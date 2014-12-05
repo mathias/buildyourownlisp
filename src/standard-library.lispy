@@ -80,5 +80,87 @@
      {join (head l) (take (- n 1) (tail l))}
 })
 
+; drop n items
+(defun {drop n l} {
+  if (== n 0)
+     {l}
+     {drop (- n 1) (tail l)}
+})
 
+; split at N
+(defun {split n l} {
+  list (take n l) (drop n l)
+})
 
+; apply function to list
+(defun {map f l} {
+  if (== l nil)
+     {nil}
+     {join (list (f (first l))) (map f (tail l))}
+})
+
+; apply filter to list
+(defun {filter f l} {
+  if (== l nil)
+     {nil}
+     {join (if (f (first l)) {head l} {nil}) (filter f (tail l))}
+})
+
+; fold left
+(defun {foldl f z l} {
+  if (== l nil)
+     {z}
+     {foldl f (f z (first l)) (tail l)}
+})
+
+(defun {sum l} {foldl + 0 l})
+(defun {product l} {foldl * 1 l})
+
+; conditional functions
+(defun {select & cs} {
+  if (== cs nil)
+     {error "No selection found"}
+     {if (first (first cs))
+         {second (first (cs))}
+         {unpack select (tail cs)}}
+})
+
+(def {otherwise} true)
+
+;; Example:
+;; Print day of month suffix:
+(defun {month-day-suffix i} {
+  select
+    {(== i 0) "st"}
+    {(== i 2) "nd"}
+    {(== i 3) "rd"}
+    {otherwise "th"}
+})
+
+;; case function
+(defun {case x & cs} {
+  if (== cs nil)
+    {error "No Case Found"}
+    {if (== x (fst (fst cs))) {snd (fst cs)} {
+      unpack case (join (list x) (tail cs))}}
+})
+
+;; Example: day name function
+(defun {day-name x} {
+  case x
+    {0 "Monday"}
+    {1 "Tuesday"}
+    {2 "Wednesday"}
+    {3 "Thursday"}
+    {4 "Friday"}
+    {5 "Saturday"}
+    {6 "Sunday"}
+})
+
+; fibonacci
+(defun {fib n} {
+  select
+    { (== n 0) {0} }
+    { (== n 1) {1} }
+    { otherwise {+ (fib (- n 1)) (fib (- n 2))} }
+})
